@@ -24,7 +24,7 @@ class UpdateUserAction extends Action
 
     public function execute()
     {
-        return User::where('id', $this->validatedFields['user_id'])->update([
+        return User::where('id', $this->data['user_id'])->update([
             'first_name' => $this->validatedFields['first_name'],
             'last_name' => $this->validatedFields['last_name'],
             'phone' => $this->validatedFields['phone'] ?? null,

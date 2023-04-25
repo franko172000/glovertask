@@ -3,9 +3,11 @@
 namespace App\Business\Actions\User;
 
 use App\Business\Actions\Action;
+use App\Enums\UsersEnum;
 use App\Persistence\Models\User;
 use App\Traits\UserRulesTrait;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
 class CreateUserAction extends Action
@@ -16,7 +18,9 @@ class CreateUserAction extends Action
      */
     public function rules(): array
     {
-        return $this->createRules();
+        return array_merge($this->createRules(), [
+            'user_type' => 'string|in:'.implode(",", [UsersEnum::ADMIN->value, UsersEnum::CUSTOMER->value])
+        ]);
     }
 
     /**
@@ -31,6 +35,7 @@ class CreateUserAction extends Action
             'phone' => $this->data['phone'],
             'email' => $this->data['email'],
             'password' => Hash::make($this->data['password']),
+            'user_type' => Arr::get($this->data, 'user_type', UsersEnum::CUSTOMER->value)
         ]);
 
         return $user->createToken('apiToken')->plainTextToken;

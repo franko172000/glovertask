@@ -29,7 +29,7 @@ class LoginUserAction extends Action
     {
         $user = User::where('email', $this->data['email'])->first();
 
-        if($user && Hash::check($this->data['email'], $user->password)){
+        if($user && Hash::check($this->data['password'], $user->password)){
             return $user->createToken('apiToken')->plainTextToken;
         }
         throw new AuthenticationException();

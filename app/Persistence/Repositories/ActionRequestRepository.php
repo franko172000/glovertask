@@ -16,7 +16,7 @@ class ActionRequestRepository extends BaseRepository
     {
         return $this->model->create([
             'user_id' => $adminId,
-            'action_data' => json_encode($data),
+            'action_data' => $data,
             'request_type' => $type
         ]);
     }

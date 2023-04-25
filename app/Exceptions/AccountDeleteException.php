@@ -5,7 +5,5 @@ namespace App\Exceptions;
 use Exception;
 use Throwable;
 
-class AccountDeleteException extends Exception
-{
-
+class AccountDeleteException extends Exception {
 }

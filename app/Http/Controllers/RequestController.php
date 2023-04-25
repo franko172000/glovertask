@@ -6,10 +6,10 @@ use App\Business\Actions\Requests\ApproveRequestAction;
 use App\Business\Actions\Requests\DeclineRequestAction;
 use App\Business\Actions\Requests\UserDeleteRequestAction;
 use App\Business\Actions\Requests\UserUpdateRequestAction;
-use App\Business\Actions\User\DeleteUserAction;
 use App\Http\Requests\UserCreationRequest;
 use App\Business\Actions\Requests\UserCreationRequestAction;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\RequestResource;
 use App\Persistence\Models\ActionRequest;
 use App\Persistence\Models\User;
 use App\Traits\ApiResponseTrait;
@@ -30,7 +30,7 @@ class RequestController extends Controller
     public function createUser(UserCreationRequest $request): JsonResponse
     {
         $actionRequest = UserCreationRequestAction::run(array_merge($request->validated(), [
-            'admin_id' => $request->user->id,
+            'admin_id' => $request->user()->id,
         ]));
 
         if($actionRequest){
@@ -45,7 +45,7 @@ class RequestController extends Controller
     public function updateUser(User $user, UserUpdateRequest $request): JsonResponse
     {
         $actionRequest = UserUpdateRequestAction::run(array_merge($request->validated(), [
-            'admin_id' => request()->user->id,
+            'admin_id' => request()->user()->id,
             'user_id' => $user->id,
         ]));
 
@@ -61,7 +61,7 @@ class RequestController extends Controller
     public function deleteUser(User $user): JsonResponse
     {
         $actionRequest = UserDeleteRequestAction::run([
-            'admin_id' => request()->user->id,
+            'admin_id' => request()->user()->id,
             'user_id' => $user->id,
         ]);
 
@@ -74,7 +74,7 @@ class RequestController extends Controller
     public function approve(ActionRequest $request): JsonResponse
     {
         $actionRequest = ApproveRequestAction::run([
-            'actioned_by' => request()->user->id,
+            'actioned_by' => request()->user()->id,
             'request_id' => $request->id,
         ]);
 
@@ -87,7 +87,7 @@ class RequestController extends Controller
     public function decline(ActionRequest $request): JsonResponse
     {
         $actionRequest = DeclineRequestAction::run([
-            'actioned_by' => request()->user->id,
+            'actioned_by' => request()->user()->id,
             'request_id' => $request->id,
         ]);
 
@@ -95,5 +95,10 @@ class RequestController extends Controller
             return $this->respondSuccess('Request was declined successfully!');
         }
         return $this->respondInternalError($this->internalError);
+    }
+
+    public function getRequests(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    {
+        return RequestResource::collection(ActionRequest::pending()->get());
     }
 }

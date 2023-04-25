@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Exceptions\ActionValidationException;
 use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -171,8 +172,13 @@ trait ApiResponseTrait
         return $this->respondError($message, 500, $exception);
     }
 
-    protected function respondValidationErrors(ValidationException $exception): JsonResponse
+    protected function respondValidationErrors(ValidationException|ActionValidationException $exception): JsonResponse
     {
         return $this->respondError($exception->getMessage(), 422, null, null, $exception->errors());
+    }
+
+    protected function respondActionValidationErrors(ActionValidationException $exception): JsonResponse
+    {
+        return $this->respondError($exception->getMessage(), 422);
     }
 }

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('action_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
+            $table->unsignedBigInteger('user_id');
             $table->enum('request_type', ['create', 'update', 'delete']);
             $table->json('action_data')->nullable();
             $table->enum('status', ['approved', 'declined', 'pending'])->default('pending');
-            $table->string('actioned_by')->nullable();
+            $table->unsignedBigInteger('actioned_by')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE');
             $table->foreign('actioned_by')->references('id')->on('users')->onDelete('CASCADE');
