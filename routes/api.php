@@ -14,18 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('auth/login', [\App\Http\Controllers\AuthController::class, 'login']);
-Route::post('admin/user', [\App\Http\Controllers\AdminController::class, 'createUser']);
+Route::post('auth/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+Route::post('admin/user', [\App\Http\Controllers\AdminController::class, 'createUser'])->name('create.admin');
 
 Route::middleware('auth:sanctum')->group(function (){
     Route::group(['prefix' => 'user'],function (){
-        Route::put('/{user}', [\App\Http\Controllers\RequestController::class, 'updateUser']);
-        Route::delete('/{user}', [\App\Http\Controllers\RequestController::class, 'deleteUser']);
-        Route::post('/register', [\App\Http\Controllers\RequestController::class, 'createUser']);
+        Route::put('/{user}', [\App\Http\Controllers\RequestController::class, 'updateUser'])->name('user.update.request');
+        Route::delete('/{user}', [\App\Http\Controllers\RequestController::class, 'deleteUser'])->name('user.delete.request');
+        Route::post('/register', [\App\Http\Controllers\RequestController::class, 'createUser'])->name('user.create.request');
     });
     Route::group(['prefix' => 'user/requests'],function (){
         Route::get('/', [\App\Http\Controllers\RequestController::class, 'getRequests']);
-        Route::patch('/approve/{request}', [\App\Http\Controllers\RequestController::class, 'approve']);
-        Route::patch('/decline/{request}', [\App\Http\Controllers\RequestController::class, 'decline']);
+        Route::post('/approve/{request}', [\App\Http\Controllers\RequestController::class, 'approve'])->name('user.approve.request');
+        Route::post('/decline/{request}', [\App\Http\Controllers\RequestController::class, 'decline'])->name('user.decline.request');
     });
 });

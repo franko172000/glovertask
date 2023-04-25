@@ -4,6 +4,7 @@ namespace App\Business\Actions\Requests;
 
 use App\Business\Actions\Action;
 use App\Enums\ActionRequestEnum;
+use App\Jobs\NotifyAdminsJob;
 use App\Persistence\Repositories\ActionRequestRepository;
 use App\Traits\UserRulesTrait;
 
@@ -24,6 +25,10 @@ class UserCreationRequestAction extends Action
         $adminId = $this->data['admin_id'];
         //remove user id
         unset($this->data['admin_id']);
-        return $actionRequestRepo->registerAction($adminId, $this->data, ActionRequestEnum::REQUEST_CREATE->value );
+        $request = $actionRequestRepo->registerAction($adminId, $this->data, ActionRequestEnum::REQUEST_CREATE->value );
+
+        NotifyAdminsJob::dispatch($adminId,ActionRequestEnum::REQUEST_CREATE->value);
+
+        return $request;
     }
 }

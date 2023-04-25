@@ -5,6 +5,7 @@ namespace App\Business\Actions\Requests;
 use App\Business\Actions\Action;
 use App\Business\Actions\User\UpdateUserAction;
 use App\Enums\ActionRequestEnum;
+use App\Jobs\NotifyAdminsJob;
 use App\Persistence\Repositories\ActionRequestRepository;
 use App\Traits\UserRulesTrait;
 
@@ -39,7 +40,12 @@ class UserUpdateRequestAction extends Action
         if($userId === $adminId){
             return UpdateUserAction::run($this->validatedFields);
         }
-        return $actionRequestRepo->registerAction($adminId, $this->validatedFields, ActionRequestEnum::REQUEST_UPDATE->value);
+
+        $request = $actionRequestRepo->registerAction($adminId, $this->validatedFields, ActionRequestEnum::REQUEST_UPDATE->value);
+
+        NotifyAdminsJob::dispatch($adminId,ActionRequestEnum::REQUEST_UPDATE->value);
+
+        return $request;
     }
 
     protected function validatedFields(array $fields): void

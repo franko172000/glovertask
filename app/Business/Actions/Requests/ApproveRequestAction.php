@@ -37,20 +37,21 @@ class ApproveRequestAction extends Action
             throw RequestActionException::withMessages("Request has already been actioned ", $this::class);
         }
 
+        $data = json_decode($request->action_data,true);
         if($request->user_id === $adminId){
             throw RequestActionException::withMessages("You can't approve a request you created", $this::class);
         }
 
         if ($request->request_type == ActionRequestEnum::REQUEST_UPDATE->value) {
-            UpdateUserAction::run($request->action_data);
+            UpdateUserAction::run($data);
         }
 
         if ($request->request_type == ActionRequestEnum::REQUEST_DELETE->value) {
-            DeleteUserAction::run($request->action_data);
+            DeleteUserAction::run($data);
         }
 
         if ($request->request_type == ActionRequestEnum::REQUEST_CREATE->value) {
-            CreateUserAction::run($request->action_data);
+            CreateUserAction::run($data);
         }
 
         return $actionRequestRepo->approveRequest($this->data['request_id'], $adminId);

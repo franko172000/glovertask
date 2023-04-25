@@ -34,7 +34,7 @@ class RequestController extends Controller
         ]));
 
         if($actionRequest){
-            return $this->respondSuccess('User creation request submitted successfully!');
+            return $this->respondSuccess('User creation request submitted successfully!', 201);
         }
         return $this->respondInternalError($this->internalError);
     }
@@ -44,6 +44,10 @@ class RequestController extends Controller
      */
     public function updateUser(User $user, UserUpdateRequest $request): JsonResponse
     {
+        if(count($request->validated()) === 0){
+            return $this->respondError('You must send at least one field for update');
+        }
+
         $actionRequest = UserUpdateRequestAction::run(array_merge($request->validated(), [
             'admin_id' => request()->user()->id,
             'user_id' => $user->id,

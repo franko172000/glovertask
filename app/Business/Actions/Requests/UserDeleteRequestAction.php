@@ -6,6 +6,7 @@ use App\Business\Actions\Action;
 use App\Business\Actions\User\UpdateUserAction;
 use App\Enums\ActionRequestEnum;
 use App\Exceptions\AccountDeleteException;
+use App\Jobs\NotifyAdminsJob;
 use App\Persistence\Repositories\ActionRequestRepository;
 use App\Traits\UserRulesTrait;
 
@@ -36,7 +37,12 @@ class UserDeleteRequestAction extends Action
         if($userId === $adminId){
             throw new AccountDeleteException('Own account deletion is not allowed!');
         }
-        return $actionRequestRepo->registerAction($adminId, $this->data, ActionRequestEnum::REQUEST_DELETE->value);
+
+        $request = $actionRequestRepo->registerAction($adminId, $this->data, ActionRequestEnum::REQUEST_DELETE->value);
+
+        NotifyAdminsJob::dispatch($adminId,ActionRequestEnum::REQUEST_DELETE->value);
+
+        return $request;
     }
 
     protected function validatedFields(array $fields): void
