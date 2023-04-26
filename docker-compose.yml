@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+    glover-app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        command: bash -c 'php artisan migrate && php artisan serve --host=0.0.0.0'
+        volumes:
+            - .:/usr/src/app
+        env_file:
+           - ./.env.docker
+        networks:
+            - glover
+        ports:
+            - 8000:8000
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+    mysql-db:
+        platform: linux/x86_64
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - ./storage/dbdata:/var/lib/mysql
+        networks:
+            - glover
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+            retries: 3
+            timeout: 5s
+        ports:
+            - '3306:3306'
+networks:
+    glover:
+        driver: bridge
+volumes:
+    mysql-db:
+        driver: local
