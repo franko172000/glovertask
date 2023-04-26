@@ -35,6 +35,7 @@ If you followed the steps above, you can login to any account with any of these 
 5. POST - http://localhost:8000/api/user/register - Requests new user creation
 6. POST - http://localhost:8000/api/user/requests/approve/{requestId} - Approved Requests
 7. POST - http://localhost:8000/api/user/requests/decline/{requestId} - Decline Requests
+8. POST - http://localhost:8000/api/user/requests - Get all pending requests
 
 ## Required PHP version
 ^8.1
